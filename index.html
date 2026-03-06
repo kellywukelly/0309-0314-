@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>石打丸山滑雪行</title>
+    <style>
+        /* 日式極簡：和紙白與傳統和色設定 */
+        :root {
+            --bg-color: #F9F8F6;      /* 和紙白 */
+            --card-bg: #FFFFFF;
+            --text-main: #333333;     /* 墨灰 */
+            --text-sub: #8B8B8B;      /* 淺灰 */
+            --border-line: #EAE8E3;   /* 極細邊框 */
+            --accent: #5C5A56;
+            --tag-food: #B35C58;      /* 蘇芳 (柔紅) */
+            --tag-order: #B88942;     /* 琥珀 (柔橘) */
+            --tag-buy: #7C9161;       /* 抹茶 (柔綠) */
+            --tag-code: #53758C;      /* 琉璃 (柔藍) */
+        }
+        
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; padding: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: "Noto Sans TC", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            line-height: 1.8;
+            letter-spacing: 0.03em;
+        }
+        
+        /* 頂部標題列：去除陰影，改用極細底線 */
+        .header { 
+            background: rgba(249,248,246,0.95); 
+            backdrop-filter: blur(5px); 
+            position: sticky; top: 0; z-index: 10; 
+            padding: 18px 20px; 
+            font-size: 16px; 
+            font-weight: 500; 
+            text-align: center; 
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid var(--border-line); 
+        }
+        
+        /* 內容區塊 */
+        .content { padding: 20px 15px 100px 15px; max-width: 600px; margin: 0 auto; display: none; }
+        .content.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 卡片設計：去除陰影，改用純白底與細框線 */
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-line);
+            border-radius: 4px; /* 微圓角 */
+            padding: 24px 20px; 
+            margin-bottom: 20px; 
+        }
+        
+        .card-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin: 0 0 8px 0; 
+            color: var(--text-main); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 6px;
+        }
+        
+        .card-title span { font-weight: 400; font-size: 14px; color: var(--text-sub); }
+        .weather { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; letter-spacing: 0.05em; }
+        
+        /* 列表與區塊 */
+        .section-title { font-size: 14px; font-weight: 600; margin: 20px 0 10px 0; color: var(--text-main); display: flex; align-items: center;}
+        .section-title::before { content: ""; display: inline-block; width: 3px; height: 12px; background-color: var(--accent); margin-right: 8px; }
+        
+        ul { margin: 0; padding-left: 0; list-style: none; font-size: 14px; color: #4A4A4A; }
+        li { margin-bottom: 12px; position: relative; padding-left: 14px; }
+        li::before { content: "・"; position: absolute; left: 0; color: var(--text-sub); }
+        strong { color: var(--text-main); font-weight: 600; }
+        
+        /* 標籤設計：日系線條風格 */
+        .tag { 
+            padding: 2px 8px; 
+            border-radius: 2px; 
+            font-size: 11px; 
+            font-weight: normal; 
+            display: inline-block; 
+            margin: 0 4px 4px 0; 
+            background: transparent;
+            vertical-align: middle;
+        }
+        .tag-food { border: 1px solid var(--tag-food); color: var(--tag-food); }
+        .tag-order { border: 1px solid var(--tag-order); color: var(--tag-order); }
+        .tag-buy { border: 1px solid var(--tag-buy); color: var(--tag-buy); }
+        .tag-code { border: 1px solid var(--tag-code); color: var(--tag-code); }
+        
+        /* 導航按鈕：文字底線風格 */
+        .nav-btn { 
+            color: var(--text-main); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--text-sub);
+            padding-bottom: 1px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-btn:active { opacity: 0.5; }
+        
+        /* 表格設計：極簡無直列框線 */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--border-line); }
+        th { font-weight: 500; color: var(--text-sub); }
+
+        /* 底部導航列：去除圖標，改為純文字與指示點 */
+        .tab-bar { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: rgba(255,255,255,0.98); 
+            border-top: 1px solid var(--border-line); 
+            display: flex; justify-content: space-around; 
+            padding: 15px 0 25px 0; 
+            z-index: 100; max-width: 600px; margin: 0 auto; 
+        }
+        
+        .tab-item { 
+            text-align: center; color: var(--text-sub); 
+            font-size: 14px; font-weight: 400; 
+            cursor: pointer; flex: 1; 
+            letter-spacing: 0.1em;
+            position: relative;
+        }
+        .tab-item.active { color: var(--text-main); font-weight: 600; }
+        .tab-item.active::after {
+            content: ""; position: absolute; bottom: -8px; left: 50%;
+            transform: translateX(-50%); width: 4px; height: 4px;
+            background-color: var(--text-main); border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="header-title">行程</div>
+
+    <div id="tab-itinerary" class="content active">
+        
+        <div class="card">
+            <h2 class="card-title">Day 1: 3/9 (一) <span>抵達與移動</span></h2>
+            <div class="weather">越後湯澤約 -2°C ~ -5°C，降雪機率</div>
+            
+            <div class="section-title">航班去程</div>
+            <ul>
+                <li><strong>星宇 JX802</strong> (我與 Kitty) ｜ 10:10 TPE ➔ 14:20 NRT</li>
+            </ul>
+
+            <div class="section-title">交通手段</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=京成上野站" target="_blank" class="nav-btn">京成上野站</a> ➔ 步行 5 分 ➔ <a href="https://maps.google.com/?q=JR上野站" target="_blank" class="nav-btn">JR 上野站</a></li>
+                <li><strong>Skyliner</strong>：建議班次 15:42、16:02、16:42 (已網購)</li>
+                <li><strong>新幹線 (上野發車)</strong>：紙本車票疊一起投入閘門，<strong>勿刷 Suica</strong>
+                    <br>・餘裕：17:38 ➔ 18:45 (Toki 335)
+                    <br>・完美：17:58 ➔ 19:21 (Tanigawa 407)
+                </li>
+            </ul>
+
+            <div class="section-title">住宿與接駁</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=丸山溫泉古城館" target="_blank" class="nav-btn">丸山溫泉 古城館</a></li>
+                <li><strong>接駁車</strong>：19:30 越後湯澤出發 (2人)</li>
+                <li><span class="tag tag-code">預約番號</span> <strong>BKG987654321</strong> (樂天包裹代收)</li>
+                <li><a href="https://www.kojokan.com/booking/checkin?id=BKG987654321" target="_blank" class="nav-btn" style="color:var(--text-main);">專屬入住手續連結</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Day 2: 3/10 (二) <span>滑雪課程 初日</span></h2>
+            <div class="weather">石打丸山約 1°C ~ -5°C，多雲時陰短暫雪</div>
+            
+            <div class="section-title">行程概要</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=石打丸山滑雪場" target="_blank" class="nav-btn">石打丸山滑雪場</a></li>
+                <li><strong>午前</strong>：飯店(¥8,500)或雪場(¥18,500)租裝備。不去雪物嚴選。</li>
+                <li><strong>午後</strong>：雪道練習</li>
+            </ul>
+
+            <div class="section-title">食事推薦</div>
+            <ul>
+                <li><span class="tag tag-food">必食</span> <strong>ウィンターハウス大丸</strong> (現烤炭火燒肉)</li>
+                <li><span class="tag tag-order">銘品</span> <strong>The Veranda</strong> (奧地利餐廳：荷蘭鐵鍋鬆餅)</li>
+            </ul>
+            
+            <div class="section-title">住宿</div>
+            <ul>
+                <li><strong>古城館</strong> (晚餐預約完畢)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Day 3: 3/11 (三) <span>滑雪課程 二日目</span></h2>
+            <div class="weather">石打丸山約 0°C ~ -4°C，多雲</div>
+            
+            <div class="section-title">朝食</div>
+            <ul>
+                <li><strong>古城館</strong>內用 (已追加)</li>
+            </ul>
+            <div class="section-title">行程概要</div>
+            <ul>
+                <li>全日：滑雪課程與練習</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Day 4: 3/12 (四) <span>Solo Ski 與東京移動</span></h2>
+            <div class="weather">越後湯澤 2°C ~ -3°C / 東京約 12°C</div>
+            
+            <div class="section-title">行程概要</div>
+            <ul>
+                <li><strong>午前</strong>：古城館早餐 ➔ 退房寄放行李</li>
+                <li><strong>全日</strong>：自主滑雪 (石打丸山)</li>
+            </ul>
+
+            <div class="section-title">交通手段 (返東京)</div>
+            <ul>
+                <li><strong>17:00 頃</strong>：歸還裝備，轉新幹線回東京。</li>
+                <li><strong>新幹線 參考時刻</strong>
+                    <br>・15:12 ➔ 16:22 (Toki 324)
+                    <br>・16:00 ➔ 17:14 (Tanigawa 412)
+                    <br>・16:18 ➔ 17:34 (Toki 328)
+                    <br>・17:08 ➔ 18:14 (Tanigawa 86，建議 16:00-16:30 還裝備)
+                </li>
+            </ul>
+
+            <div class="section-title">車站採買 (CoCoLo 湯澤)</div>
+            <ul>
+                <li><span class="tag tag-food">必食</span> <strong>ぽんしゅ館</strong> (投幣品嚐清酒)</li>
+                <li><span class="tag tag-order">銘品</span> <strong>爆彈飯糰</strong> (推薦明太子，兩人分食)</li>
+                <li><span class="tag tag-buy">土產</span> <strong>南魚沼產越光米</strong>、<strong>新潟地酒</strong>、<strong>笹糰子</strong></li>
+            </ul>
+
+            <div class="section-title">住宿</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=Tosei+Hotel+Cocone+Ueno+Okachimachi" target="_blank" class="nav-btn">Tosei Hotel Cocone 上野御徒町</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Day 5: 3/13 (五) <span>東京散策</span></h2>
+            <div class="weather">東京上野約 14°C ~ 6°C，晴時多雲</div>
+            
+            <div class="section-title">行程概要</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=上野阿美橫町" target="_blank" class="nav-btn">阿美橫町</a> (全日市區逛街採買)</li>
+            </ul>
+
+            <div class="section-title">食事與採買</div>
+            <ul>
+                <li><span class="tag tag-food">必食</span> <strong>とんかつ山家</strong> (平價炸豬排)、<strong>肉の大山</strong></li>
+                <li><span class="tag tag-order">銘品</span> <strong>和牛炸肉餅 / 可樂餅</strong> (肉の大山外帶)</li>
+                <li><span class="tag tag-buy">土產</span> <strong>二木的菓子</strong>、<strong>多慶屋</strong> (鱈魚芝麻條)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Day 6: 3/14 (六) <span>歸途</span></h2>
+            <div class="weather">東京 / 成田約 15°C ~ 8°C</div>
+            
+            <div class="section-title">交通手段</div>
+            <ul>
+                <li><a href="https://maps.google.com/?q=京成上野站" target="_blank" class="nav-btn">京成上野站</a> ➔ <strong>Skyliner</strong> (建議 11:00 前抵達)</li>
+            </ul>
+
+            <div class="section-title">航班回程</div>
+            <ul>
+                <li><strong>我</strong>：星宇 JX801 (13:45 ➔ 16:45 TPE)</li>
+                <li><strong>Kitty</strong>：長榮 BR183 (13:00 ➔ 16:05 TPE)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-tools" class="content">
+        
+        <div class="card">
+            <h2 class="card-title">航班資訊</h2>
+            <table>
+                <tr><th>搭乘者</th><th>去程 (3/9)</th><th>回程 (3/14)</th></tr>
+                <tr><td>我</td><td>JX802 (10:10)</td><td>JX801 (13:45)</td></tr>
+                <tr><td>Kitty</td><td>JX802 (10:10)</td><td>BR183 (13:00)</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">住宿資訊</h2>
+            <div class="section-title">前三晚 (3/9 - 3/11)</div>
+            <ul>
+                <li><strong>丸山溫泉 古城館</strong></li>
+                <li>預約番號: <code>BKG987654321</code></li>
+                <li>備註: 含 3/10、3/11、3/12 早餐，3/9 晚餐已預約。</li>
+            </ul>
+            <div class="section-title">後兩晚 (3/12 - 3/13)</div>
+            <ul>
+                <li><strong>Tosei Hotel Cocone</strong> (上野御徒町)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">緊急聯絡</h2>
+            <ul>
+                <li>警察 / 事故: <strong>110</strong></li>
+                <li>救護 / 消防: <strong>119</strong></li>
+                <li>台灣急難救助專線: <strong>001-800-0885-0885</strong></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">預算紀錄</h2>
+            <table>
+                <tr><th>項目</th><th>預估 (日元)</th><th>備註</th></tr>
+                <tr><td>雪票(3日)</td><td>¥ 20,000</td><td>單人</td></tr>
+                <tr><td>雪板租借</td><td>¥ 8,500起</td><td>視飯店或雪場定價</td></tr>
+                <tr><td>Skyliner</td><td>¥ 2,310</td><td>單程(已網購)</td></tr>
+                <tr><td>去程新幹線</td><td>¥ 13,160</td><td>單程兩人總價</td></tr>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('itinerary', this)">行程</div>
+        <div class="tab-item" onclick="switchTab('tools', this)">手帳</div>
+    </div>
+
+    <script>
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            element.classList.add('active');
+            
+            document.getElementById('header-title').innerText = tabName === 'itinerary' ? '行程' : '手帳';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
